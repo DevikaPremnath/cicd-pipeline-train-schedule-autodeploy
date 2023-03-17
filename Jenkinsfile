@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'master' }
     environment {
         DOCKER_IMAGE_NAME = "1deepesh/train-schedule"
     }
