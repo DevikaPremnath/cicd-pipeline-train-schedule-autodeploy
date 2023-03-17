@@ -24,10 +24,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'docker_hub_login', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                     sh ''' 
-                       docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
-                       docker push $DOCKER_IMAGE_NAME
-                       '''
+                      docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+                      docker push $DOCKER_IMAGE_NAME
                       }
                 }
             }
@@ -37,11 +35,7 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
+                sh "kubectl apply -f train-schedule-kube-canary.yml"
             }
         }
         stage('DeployToProduction') {
@@ -51,16 +45,18 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube.yml',
-                    enableConfigSubstitution: true
-                )
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube-canary.yml',
+                //     enableConfigSubstitution: true
+                // )
+                // kubernetesDeploy(
+                //     kubeconfigId: 'kubeconfig',
+                //     configs: 'train-schedule-kube.yml',
+                //     enableConfigSubstitution: true
+                // )
+                sh "kubectl apply -f train-schedule-kube-canary.yml"
+                sh "kubectl apply -f train-schedule-kube.yml"
             }
         }
     }
