@@ -38,6 +38,7 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
+                sh "export KUBECONFIG=/etc/kubernetes/admin.conf"
                 sh "kubectl apply -f train-schedule-kube-canary.yml"
             }
         }
