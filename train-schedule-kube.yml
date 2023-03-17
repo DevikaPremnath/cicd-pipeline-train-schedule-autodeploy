@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       - name: train-schedule
-        image: devika/train-schedule
+        image: 1devika/train-schedule
         ports:
         - containerPort: 8080
         livenessProbe:
