@@ -58,7 +58,8 @@ pipeline {
                 //     configs: 'train-schedule-kube.yml',
                 //     enableConfigSubstitution: true
                 // )
-                sh "kubectl apply -f train-schedule-kube-canary.yml"
+    
+                sh "kubectl scale deployment --replicas 0 train-schedule-deployment-canary "
                 sh "kubectl apply -f train-schedule-kube.yml"
             }
         }
