@@ -1,6 +1,7 @@
 pipeline {
     agent { label 'master' }
     environment {
+        //be sure to replace "bhavukm" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "1devika/train-schedule"
     }
     stages {
@@ -14,9 +15,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    app = docker.build(DOCKER_IMAGE_NAME)
-                    app.inside {
-                        sh 'echo Hello, World!'
+                      sh "docker build -t $DOCKER_IMAGE_NAME:latest"
                     }
                 }
             }
@@ -24,10 +23,10 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push("latest")
-                    }
+                    withCredentials([usernamePassword(credentialsId: 'docker_hub_login', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                      docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+                      docker push $DOCKER_IMAGE_NAME
+                      }
                 }
             }
         }
