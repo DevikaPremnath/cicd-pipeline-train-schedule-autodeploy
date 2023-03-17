@@ -4,6 +4,8 @@ pipeline {
         //be sure to replace "bhavukm" with your own Docker Hub username
         DOCKER_IMAGE_NAME = "1devika/train-schedule"
         JAVA_HOME = "/usr/lib/jvm/java-8-oracle/"
+        KUBECONFIG = "/var/lib/jenkins/devops-cluster-admin-config"
+
     }
     stages {
         stage('Build') {
@@ -38,13 +40,6 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-               sh '''
-                export KUBECONFIG=/etc/kubernetes/admin.conf && \
-                sudo cp /etc/kubernetes/admin.conf $HOME/ && \
-                sudo chown $(id -u):$(id -g) $HOME/admin.conf && \
-                export KUBECONFIG=$HOME/admin.conf && \
-                echo 'export KUBECONFIG=$HOME/admin.conf' >> $HOME/.bashrc
-                '''
                 sh "kubectl apply -f train-schedule-kube-canary.yml"
             }
         }
