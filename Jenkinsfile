@@ -38,7 +38,13 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                sh "export KUBECONFIG=/etc/kubernetes/admin.conf"
+               sh '''
+                export KUBECONFIG=/etc/kubernetes/admin.conf && \
+                sudo cp /etc/kubernetes/admin.conf $HOME/ && \
+                sudo chown $(id -u):$(id -g) $HOME/admin.conf && \
+                export KUBECONFIG=$HOME/admin.conf && \
+                echo 'export KUBECONFIG=$HOME/admin.conf' >> $HOME/.bashrc
+                '''
                 sh "kubectl apply -f train-schedule-kube-canary.yml"
             }
         }
